@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"strings"
 	"testing"
 )
 
 func RunGitHashObject(filePath string) (string, error) {
 	cmd := exec.Command("git", "hash-object", "-w", filePath)
-	fmt.Println("git cmd: ", cmd)
 
 	// Capture stdout
 	var out bytes.Buffer
@@ -29,7 +29,6 @@ func RunGitHashObject(filePath string) (string, error) {
 func RunMainFuncWithHashObject(fileName string) (string, error) {
 	cmd := exec.Command("go", "run", "main.go", "hash-object", "-w", fileName)
 
-	fmt.Println("cmd: ", cmd)
 	// Capture stdout
 	var out bytes.Buffer
 	cmd.Stdout = &out
@@ -72,15 +71,16 @@ func TestHashObject (t *testing.T) {
 		}
 	})
 
-	// t.Run("Testing the blob object creation", func(t *testing.T) {
-	// 	filePath := fmt.Sprintf(".mygit/objects/%s/%s", gotHash[0:2], gotHash[2:])
-	// 	fmt.Println("filePath: ", filePath)
-	// 	_, err := os.Stat(filePath)
-	// 	if err != nil {
-	// 		if os.IsNotExist(err) {
-	// 			fmt.Println("Error: ", err)
-	// 			os.Exit(1)
-	// 		}
-	// 	}
-	// })
+	t.Run("Testing the blob object creation", func(t *testing.T) {
+		gotHash = strings.TrimSpace(gotHash)
+		filePath := fmt.Sprintf(".mygit/objects/%s/%s", gotHash[0:2], gotHash[2:])
+		// read the file
+		_, err := os.Stat(filePath)
+		if err != nil {
+			if os.IsNotExist(err) {
+				fmt.Println("Error finding file: ", err)
+				os.Exit(1)
+			}
+		}
+	})
 }
