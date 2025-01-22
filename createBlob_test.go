@@ -43,6 +43,23 @@ func RunMainFuncWithHashObject(fileName string) (string, error) {
 	return out.String(), nil
 }
 
+func RUnMainFunctionCatFile(objectHash string) (string, error) {
+	cmd := exec.Command("go", "run", "main.go", "cat-file", "-p", objectHash)
+
+	// Capture stdout
+	var out bytes.Buffer
+	cmd.Stdout = &out
+
+	// Run the command
+	err := cmd.Run()
+	if err != nil {
+		return "", err
+	}
+
+	// Return the hash (trim whitespace)
+	return out.String(), nil
+}
+
 
 func TestHashObject (t *testing.T) {
 	// Create a file with some content
@@ -60,9 +77,9 @@ func TestHashObject (t *testing.T) {
 	}
 
 	// call main function with the hash-object command
-	gotHash, myGitErr := RunMainFuncWithHashObject(fileName)
-	if myGitErr != nil {
-		t.Fatalf("Error implementing mygit command: %s\n", myGitErr)
+	gotHash, myGitHashObjectError := RunMainFuncWithHashObject(fileName)
+	if myGitHashObjectError != nil {
+		t.Fatalf("Error implementing mygit command: %s\n", myGitHashObjectError)
 	}
 
 	t.Run("Testing Hash creation", func(t *testing.T) {
@@ -81,6 +98,19 @@ func TestHashObject (t *testing.T) {
 				fmt.Println("Error finding file: ", err)
 				os.Exit(1)
 			}
+		}
+	})
+
+	t.Run("Testing the contents of the blob", func(t *testing.T) {
+		// call main function with the cat-file command
+		gotContent, myGitCatFileError := RUnMainFunctionCatFile(gotHash)
+		if myGitCatFileError != nil {
+			t.Fatalf("Error implementing mygit command: %s\n", myGitCatFileError)
+		}
+		gotContent = strings.TrimSpace(gotContent)
+		wantContent := string(fileContents)
+		if gotContent != wantContent {
+			t.Errorf("got %q want %q", gotContent, wantContent)
 		}
 	})
 }
