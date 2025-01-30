@@ -43,7 +43,7 @@ func RunMainFuncWithHashObject(fileName string) (string, error) {
 	return out.String(), nil
 }
 
-func RUnMainFunctionCatFile(objectHash string) (string, error) {
+func RunMainFunctionCatFile(objectHash string) (string, error) {
 	cmd := exec.Command("go", "run", "main.go", "cat-file", "-p", objectHash)
 
 	// Capture stdout
@@ -70,7 +70,7 @@ func TestHashObject (t *testing.T) {
 		t.Fatalf("Error writing to test file: %s\n", err)
 	}
 
-	// Run the hash-object command
+	// Run the git hash-object command
 	wantHash, gitErr := RunGitHashObject(fileName)
 	if gitErr != nil {
 		t.Fatalf("Error implementing git command: %s\n", gitErr)
@@ -103,7 +103,7 @@ func TestHashObject (t *testing.T) {
 
 	t.Run("Testing the contents of the blob", func(t *testing.T) {
 		// call main function with the cat-file command
-		gotContent, myGitCatFileError := RUnMainFunctionCatFile(gotHash)
+		gotContent, myGitCatFileError := RunMainFunctionCatFile(gotHash)
 		if myGitCatFileError != nil {
 			t.Fatalf("Error implementing mygit command: %s\n", myGitCatFileError)
 		}
