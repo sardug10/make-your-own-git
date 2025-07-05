@@ -60,8 +60,7 @@ func RunMainFunctionCatFile(objectHash string) (string, error) {
 	return out.String(), nil
 }
 
-
-func TestHashObject (t *testing.T) {
+func TestHashObject(t *testing.T) {
 	// Create a file with some content
 	fileName := "text.txt"
 	fileContents := []byte("Hello, World!")
@@ -113,4 +112,23 @@ func TestHashObject (t *testing.T) {
 			t.Errorf("got %q want %q", gotContent, wantContent)
 		}
 	})
+}
+
+func TestListObjectCmnd(t *testing.T) {
+	tempDir, err := os.MkdirTemp("", "worktree")
+	if err != nil {
+		t.Fatalf("Error creating temporary directory")
+	}
+
+	cmd := exec.Command("pwd")
+	cmd.Dir = tempDir
+
+	// your_repo/
+	//  - file1
+	//  - dir1/
+	//    - file_in_dir_1
+	//    - file_in_dir_2
+	//  - dir2/
+	//    - file_in_dir_3
+
 }
